@@ -475,7 +475,7 @@ def scoring3A_behavior_all(verbose=True):
                    ['aupr_nc', 'sqrt_nc', 'sym_pseudoV_nc'],
                    ['aupr_nc', 'sqrt_nc', 'sym_pseudoV_nc', 'pearson_nc']]:
         for fm in [True, False]:
-            for pc in ['none', 'less', 'more']:
+            for pc in ['less', 'more']:
                 scoring3A_behavior(method=method, verbose=verbose,pc_amount=pc, full_matrix=fm)
                 print 'Done %s - Pseudo Counts: %s - Full Matrix: %s' % (method,pc,fm)
 
@@ -965,6 +965,7 @@ def scoringtotal_behavior(verbose=False):
 
 
 if __name__ == '__main__':
+
     methods ={
         '1A':['abs', 'sqr'],
         '1B':['orig', 'normalized'],
@@ -976,9 +977,10 @@ if __name__ == '__main__':
             "spearman",
             "pearson",
             "aupr",
-            "mcc"],
+            "mcc",
+	    "default"],
     }
-
+    '''
     for m in methods['1A']:
         print 'Scoring 1A Behavior with method ' + m + '...'
         scoring1A_behavior(m)
@@ -990,15 +992,15 @@ if __name__ == '__main__':
     for m in methods['1C']:
         print 'Scoring 1C Behavior with method ' + m + '...'
         scoring1C_behavior(m)
-
+    '''
     for m in methods['2']:
         print 'Scoring 2B Behavior with method ' + m + '...'
         scoring2B_behavior(method=m, verbose=True)
         scoring2A_behavior(method=m, verbose=True)
-
+    '''
     print 'Scoring 3A Behavior...'
     scoring3A_behavior_all(verbose=True)
 
     print 'Scoring 3A Behavior using multiplke metrics with different weights...'
     scoring3A_weight_behavior(verbose=True)
-
+    '''
