@@ -5,7 +5,7 @@
 library(BoutrosLab.plotting.general)
 
 # Directories for tsv files and plots respectively
-setwd("~/Documents/SMC-Het/SMC-Het-Challenge/smc_het_eval")
+setwd("/u/asalcedo/SMC-HET-Paper1/smc_het_eval/")
 tsv_dir = "scoring_metric_data/text_files/"
 plot_dir = "scoring_metric_data/metric_behaviour_plots/"
 
@@ -328,17 +328,18 @@ main <- function(){
   for(p in penalties){
     diff.tot <- data.frame(matrix(nrow=0, ncol=length(method.names)))
     
-    for(o in ordering.names){
-      diff <- sapply(method.names, ordering.diff,ordering=o, penalty=p)
+#    for(o in ordering.names){
+      diff <- sapply(method.names, ordering.diff,ordering="Copeland", penalty=p)
       names(diff) <- method.names
       diff.tot <- rbind(diff.tot, diff)
     }
     colnames(diff.tot) <- method.names
-    rownames(diff.tot) <- ordering.names
-    
-    plot.diff(diff.tot)
+ #   rownames(diff.tot) <- ordering.names
+	browser()
+    plot.diff.AS(diff.tot)
     write.table(x = diff.tot, file = paste(tsv_dir, "metric_diff_", p,".csv", sep=""), sep = ",", )
-  }
+  
+ # }
 }
 
 #### plot.diff #################################################################################
@@ -355,7 +356,7 @@ plot.diff <- function(diff.tot){
   diff.tot <- diff.tot[,order(diff.tot["Copeland",])]
   # data for bar plot
   xdata <- colnames(diff.tot)
-  ydata <-  diff.tot["Copeland",]
+  ydata <-  diff.tot[1,]
   bp <- create.barplot(ydata ~ xdata, 
                  diff.tot,
                  main = "Difference Between Metric Rankings and Desired Rankings",
@@ -369,10 +370,11 @@ plot.diff <- function(diff.tot){
                  ylab.cex = 1.5,
                  col=diff.colours,
                  sample.order = "increasing",
-                 ylimits = c(0,1.1*max(ydata))
+                 ylimits = c(0,1.1*max(ydata)),
+  				 filename = "Sc3_Spearman"
   )
   
-  print(bp)
+ # print(bp)
   return(bp)
 }
 

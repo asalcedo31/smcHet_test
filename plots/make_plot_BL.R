@@ -1,6 +1,7 @@
 library(BoutrosLab.plotting.general)
-setwd("/u/asalcedo/SMC-HET-Paper1//Subchallenge1 plots")
-da = read.csv("scoring1A_behavior.tsv",sep="\t",header=FALSE)
+library(plyr)
+setwd("/u/asalcedo/SMC-HET-Paper1/")
+da = read.csv("plots/scoring1A_behavior.tsv",sep="\t",header=FALSE)
 colnames(da) = c("Real","Pred","Error")
 
 
@@ -48,7 +49,7 @@ create.scatterplot(
   )
 ## 1b beta plot ###################################################################################
 
-db = read.csv("scoring1B_behavior.tsv",sep="\t",header=FALSE)
+db = read.csv("plots/scoring1B_behavior.tsv",sep="\t",header=FALSE)
 colnames(db) = c("Real","Pred","Error")
 png(file="1B.png")
 ggplot(db,aes(x=Pred,y=Error,color=as.factor(Real))) + geom_point() + geom_line() + xlab("Predicted Number of Clusters") + 
@@ -99,7 +100,7 @@ create.scatterplot(
 
 ## 1c beta plot phy sys error ###################################################################################
 
-d = read.csv("scoring1C_phi_sys_behavior.tsv",sep="\t",header=FALSE)
+d = read.csv("plots/scoring1C_phi_sys_behavior.tsv",sep="\t",header=FALSE)
 colnames(d) = c("Error","Metric")
 png(file="1C_phi_systematic.png")
 ggplot(d,aes(x=Error,y=Metric)) + geom_point() + xlab("Systematic Phi Error") + ylab("1C Metric") + 
@@ -130,7 +131,7 @@ create.scatterplot(
 ## 1c Zero Mean Phi Noise ###################################################################################
 
 
-d = read.csv("scoring1C_phi_ZM_behavior.tsv",sep="\t",head=FALSE)
+d = read.csv("plots/scoring1C_phi_ZM_behavior.tsv",sep="\t",head=FALSE)
 colnames(d) = c("Concentration","PhisUsed","Metric")
 png(file="1C_phi_ZM.png")
 ggplot(d, aes(x=as.ordered(Concentration), y=as.numeric(Metric))) + 
@@ -169,7 +170,7 @@ create.stripplot(
 
 ## 1c Zero Mean Error SSMs ###################################################################################
 
-d = read.csv(file="scoring1C_nssm_behavior.tsv", sep="\t",header=FALSE)
+d = read.csv(file="plots/scoring1C_nssm_behavior.tsv", sep="\t",header=FALSE)
 colnames(d) = c("Concentration","NssmsUsed","Metric")
 png(file="1C_nssms_ZM.png")
 ggplot(d, aes(x=as.ordered(Concentration), y=as.numeric(Metric))) + 
@@ -209,7 +210,7 @@ create.stripplot(
 
 ## 1c Cases ###################################################################################
 
-d = read.csv(file="scoring1C_cases.tsv", sep="\t",header=FALSE)
+d = read.csv(file="plots/scoring1C_cases.tsv", sep="\t",header=FALSE)
 colnames(d) = c("Case","Metric")
 png(file="1C_Cases.png")
 ggplot(d,aes(y=1-Metric,x=as.factor(Case))) + 
@@ -235,7 +236,128 @@ create.barplot(
   resolution = 400,
   style= 'Nature'
 )
+
+##2A cases barplots multiplot #####################################################################
+tsv.dir = "scoring_metric_data/text_files/"
+plot.dir = "/u/asalcedo/SMC-HET-Paper1/plots/"
+method.names <- c("default",
+                  "sqrt",
+                  "pseudoV",
+                  "sym_pseudoV",
+                  "spearman",
+                  "pearson",
+                  "aupr",
+                  "mcc")
+
+barplots.methods <- list();
+for (method in method.names){
+	d = read.csv(file=paste(tsv.dir, "scoring2A_cases_", method, ".tsv", sep=""), sep="\t",header=FALSE);
+	colnames(d) = c("Case","Metric");
+	filename = paste(plot.dir, "2A_Cases_", method, ".tiff", sep="");
+	d$CaseName <- c("Split Cluster", "Merge Cluster", "One Cluster", "N Clusters", "Small Extra", "Big Extra");
+	d <- d[c(4,3,6,1,2,5),]
+	rownames(d)<-c(1:6)
+	barplots.methods[[method]] <- create.barplot(
+		  formula =  Metric ~ CaseName,
+		  data = d,
+		#  plot.horizontal = TRUE,
+		  xlab.cex = 1.2,
+		  ylab.cex = 1.2,
+		  yaxis.cex = 1,
+		  xaxis.cex = 1,
+		  ylim = c(-0.2,1.5),
+		  ylab.label = c("Error Cases"),
+		  xlab.label= c("Metric Score"),
+		  height = 4.8,
+		  width = 3.35,
+		  sample.order = c( "N Clusters","One Cluster", "Big Extra","Split Cluster", "Merge Cluster", "Small Extra") ,
+		  col = colour.gradient('slategrey',6),
+		  style= 'Nature'
+	);
+}
+	
+	png("test_barplot2A_reordered.png")
+	print(barplots.methods[['pseudoV']])
+	dev.off()
+
+create.multiplot(
+	plot.objects = barplots.methods,
+	plot.layout = c(2,4),
+	filename = "2A_multiplot.tiff",
+	y.spacing = -3.5,
+	xat = list(c(1:6),c(1:6),c(),c(),c(),c(),c(),c()),
+	xaxis.lab = list(c( "N Clusters","One Cluster", "Big Extra","Split Cluster", "Merge Cluster", "Small Extra"),c( "N Clusters","One Cluster", "Big Extra","Split Cluster", "Merge Cluster", "Small Extra") ,c(),c(),c(),c(),c(),c()),
+	ylim = c(-0.35,1.4),
+	xaxis.cex = 0.6,
+	yaxis.cex = 0.6,
+	xaxis.rot = 70,
+	bottom.padding = 0.1,
+	top.padding = 0.2,
+	xlab.to.xaxis.padding = 0.1,
+	ylab.padding = 0.5,
+	left.padding = 0.5,
+	ylab.label = "Score",
+	ylab.cex = 0.75,,
+	right.padding = 0.5,
+	height = 4.6,
+	width = 3.35,
+	style = 'Nature'
+	)
+	
+#### SC2A strip plot#################################################################################
+all_metrics <- list()
+for (method in method.names){
+	d = read.csv(file=paste(tsv.dir, "scoring2A_cases_", method, ".tsv", sep=""), sep="\t",header=FALSE);
+	colnames(d) = c("Case","Metric");
+	all_metrics[[method]] <- d ;
+}
+
+all_metrics_df <- ldply(all_metrics, function(x) as.data.frame(x), .id = 'method')
+
+create.scatterplot(
+	formula = Metric ~ case_num,
+	data = all_metrics_df,
+	filename = "2A_stripplot",
+	type = c('p','l'),
+	groups = all_metrics_df$method,
+	col = default.colours(8),
+	xaxis.rot = 70,
+	xaxis.lab = c( "N Clusters","One Cluster", "Big Extra","Split Cluster", "Merge Cluster", "Small Extra"),
+	xat = seq(1,6),
+	ylim = c(-0.35,1.2),
+	yaxis.cex = 0.6,
+	xaxis.cex = 0.7,
+	xlab.label = c(),
+	ylab.label = 'Score',
+	ylab.cex = 0.75,
+	key = list (
+        points = list(
+	        pch = 19,
+    	    col = default.colours(8),
+    	    cex = 0.3
+       ),
+		text = list(
+			lab = c("Average of MCC, Pearsion, PseudoV","Square-root","PseudoV","Symmetric PseudoV", "Spearman", "Pearson", "AUPR","MCC"),
+			cex = 0.65,
+			col = 'black',
+			padding.text =  -0.2
+			),
+	x = 0,
+	y = 1,
+	padding.text = 0.5
+),	
+	left.padding = 0.1,
+	ylab.padding = 0.1,
+	bottom.padding = 0.22,
+	cex = 0.4,
+	height = 4.6,
+	width = 3.35,
+	style = 'Nature'
+	)
+
+
 #### SC3 Scoring barplots multiplot################################################################
+
 setwd("/u/asalcedo/SMC-HET-Paper1/smc_het_eval");
 bp_pseudoV<-plot.SC3.all(method="pseudoV",colour='turquoise4', title = "PseudoV")$bp
 bp_pearson<-plot.SC3.all(method="pearson",colour= 'orangered3', title = "Pearson")$bp
@@ -245,38 +367,126 @@ bp_sqrt<-plot.SC3.all(method="sqrt", colour = 'royalblue4', title= "Square-root"
 bp_aupr<-plot.SC3.all(method="aupr",colour= 'darkmagenta', title ="AUPR")$bp
 bp_mcc<-plot.SC3.all(method="mcc",colour='black', title = "MCC")$bp
 
-legend.metrics = list (
+legend.metrics1 = list (
   legend=list(
-    colours = c('turquoise4','orangered3', 'firebrick4','royalblue4','darkmagenta','black'),
-    labels = c("PseudoV","Peason","Symmertric PseudoV","Square-root","AUPR","MCC"),
-    title = c("Metrics"),
-    size=0.5
+    colours = c('darkmagenta','firebrick4','turquoise4'),
+    labels = c("AUPR","Symmertric PseudoV","PseudoV"),
+#    title = c("Metrics"),
+    size=0.75
     )
   )
-legend.metrics.grob <-legend.grob(
-  legends= legend.metrics,
-  title.cex=0.5,
-  label.cex=0.5
+  
+legend.metrics2 = list (
+  legend=list(
+	colours = c('black','royalblue4','orangered3'),
+	labels = c("MCC","Square-root","Pearson"),
+	size=0.5
+	)
   )
+
+legend.metrics.grob <-legend.grob(
+  legends= c(legend.metrics1,legend.metrics2),
+  title.cex=0.5,
+  label.cex=0.85,
+  layout=c(2,1)
+  )
+tiff("sc3A_legend.tiff",
+	type= 'cairo',
+	height = 1,
+	width = 4, 
+	units= 'in',
+	res = 800,
+	compression = 'lzw'
+	)
+grid.draw(legend.metrics.grob)
+dev.off()
+
+
 create.multiplot(
   plot.objects = list(bp_pseudoV, bp_pearson, bp_sym_pseudoV, bp_sqrt, bp_aupr,bp_mcc),
   plot.layout = c(2,3),
   layout.skip = c(FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE),
-  xat = list(seq(1,27,7),TRUE,TRUE,TRUE,TRUE,TRUE),
-  xaxis.lab = list(rank$Copeland[order(rank$Copeland)],rank$Copeland[order(rank$Copeland)],NULL, NULL,NULL,NULL) ,
+  xat = list(seq(1,27,7),seq(1,27,7),seq(1,27,7),seq(1,27,7),seq(1,27,7),seq(1,27,7)),
+  xaxis.lab = list(rank$Copeland[order(rank$Copeland)][seq(1,27,7)],rank$Copeland[order(rank$Copeland)][seq(1,27,7)],NULL, NULL,NULL,NULL) ,
   ylab.label = c("Score"),
-  xlab.label = c("Copeland Ranking"),
-  xaxis.cex = 0.5,
-  yaxis.cex = 0.5,
-  ylab.cex = 0.75,
-  xlab.cex = 0.75,
-  y.spacing = c(-1,-1,-1),
+  xlab.label = c("Error Severity"),
+  xaxis.cex = 0.7,
+  yaxis.cex = 0.7,
+  ylab.cex = 1,
+  xlab.cex = 1,
+  xlab.to.xaxis.padding = 0,
+  xlab.padding = 5,
+  y.spacing = c(-0.5,-0.5,-0.5),
   x.relation = 'free',
-  width = 6.5,
-  height = 7,
+  width = 4,
+  height = 6.4,
   ylab.padding = 1,
- legend = list(right = list(fun=legend.metrics.grob,x=95,y=85)),
   print.new.legend = TRUE,
-  filename ="SC3_barplot_multiplot",
+  filename ="SC3_barplot_multiplot_titles",
   style ='Nature'
   )
+
+create.multiplot(
+  plot.objects = list(bp_pseudoV, bp_pearson, bp_sym_pseudoV, bp_sqrt, bp_aupr,bp_mcc),
+  plot.layout = c(2,3),
+  layout.skip = c(FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE),
+  xat = list(seq(1,27,7),seq(1,27,7),seq(1,27,7),seq(1,27,7),seq(1,27,7),seq(1,27,7)),
+  xaxis.lab = list(rank$Copeland[order(rank$Copeland)][seq(1,27,7)],rank$Copeland[order(rank$Copeland)][seq(1,27,7)],NULL, NULL,NULL,NULL) ,
+  ylab.label = c("Score"),
+  xlab.label = c("Error Severity"),
+  xaxis.cex = 0.6,
+  yaxis.cex = 0.6,
+  ylab.cex = 1,
+  xlab.cex = 1,
+  y.spacing = c(-1,-1,-1),
+  x.relation = 'free',
+  width = 4,
+  height = 5.4,
+  ylab.padding = 1,
+# legend = list(right = list(fun=legend.metrics.grob,x=95,y=85)),
+  print.new.legend = TRUE,
+  filename ="SC3_barplot_multiplot_no_legend",
+  style ='Nature'
+  )
+
+###Spearman_plot#######
+plot.diff.AS <- function(diff.tot){
+  diff.colours <- colour.gradient("chartreuse4", dim(diff.tot)[2])
+  plot.labels <- c('Symmetric PseudoV', 'AUPR, Square-root, Symmetric PseudoV', 'PseudoV, Pearson, Symmetric PseudoV', 'AUPR, Square-root, Symmetric PseudoV, Pearson', 'AUPR', 'PseudoV, MCC, Pearson','Square-root', 'PseudoV CCM', 'PseudoV',  'Pearson', 'MCC', 'Original CCM' ,'Original')
+  
+#  plot.labels <- c('Original' , 'Original CCM' , 'PseudoV CCM', 'PseudoV', 'Square-root', 'Symmetric PseudoV', 'Pearson', 'AUPR', 'MCC', 'PseudoV, MCC, Pearson', 'PseudoV, Pearson, Symmetric PseudoV', 'AUPR, Square-root, Symmetric PseudoV', 'AUPR, Square-root, Symmetric PseudoV, Pearson')
+#  diff.colours <- default.colours(number.of.colours=13, palette.type=c('seq'))
+#  diff.colours <- c(diff.colours,rep('gainsboro',9))
+#  diff.colours<-unlist(c(diff.colours,default.colours(number.of.colours=2,palette.type='pastel')))
+  diff.tot <- diff.tot[,order(diff.tot["Copeland",])]
+  # data for bar plot
+  xdata <- colnames(diff.tot)
+  ydata <-  diff.tot[1,]
+  bp <- create.barplot(ydata ~ xdata, 
+                 diff.tot,
+          #      main = "Difference Between Metric Rankings and Desired Rankings",
+           #      main.cex = 1.5,
+		   		 xlab.label = c(),
+                 xaxis.rot = 75,
+                 xaxis.cex = 0.79,
+                 yaxis.cex = 0.7,
+                 xlab.cex = 0.5,
+                 ylab.label = "1 -Spearman",
+				 right.padding = 0,
+				 left.padding = 0,
+				 ylab.axis.padding = 0.3,
+                 ylab.cex = 1,
+				 width = 3.1,
+				 height = 7,
+                 col = diff.colours,
+#				 xaxis.lab = rev(plot.labels),
+                 sample.order = "increasing",
+                 ylimits = c(0,1.1*max(ydata)),
+                 filename = "Sc3_Spearman",
+				 style = 'Nature'
+  )
+  
+ # print(bp)
+  return(bp)
+}
+main()

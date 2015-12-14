@@ -13,10 +13,10 @@ library(BoutrosLab.plotting.general)
 
 # Directories for tsv files and plots respectively
 tsv.dir = "scoring_metric_data/text_files/"
-plot.dir = "scoring_metric_data/metric_behaviour_plots/"
+plot.dir = "/u/asalcedo/SMC-HET-Paper1/plots/"
 # Directory that the script is running in (should be <SMC-Het-Challenge git repo>/smc_het_eval)
-script.dir <- dirname(sys.frame(1)$ofile)
-setwd(script.dir)
+#script.dir <- dirname(sys.frame(1)$ofile)
+#setwd(script.dir)
 
 # Lists and dictionaries with info on the metrics and the rankings
 method.names <- c("orig",
@@ -36,6 +36,7 @@ std.values <- c(0, 0.01,0.03,0.05,0.1,0.15,0.2)
 # plot all the figures that Amit made. These include: 
 
 plot.SC2.amit <- function(method='default'){
+
   # For Scoring Design Paper - Main Paper
   # Scoring behavior for different 'mistake scenarios' including
   #     - splitting one cluster into two
@@ -43,10 +44,10 @@ plot.SC2.amit <- function(method='default'){
   #     - assigning all mutations to the same cluster
   #     - assigning each mutation to its own cluster
   #     - adding an extra cluster with mutations from each true cluster (either small or large)
-  d = read.csv(file=paste(tsv_dir, "scoring2A_cases_", method, ".tsv", sep=""), sep="\t",header=FALSE)
+  d = read.csv(file=paste(tsv.dir, "scoring2A_cases_", method, ".tsv", sep=""), sep="\t",header=FALSE)
   colnames(d) = c("Case","Metric")
   
-  png(file=paste(plot_dir, "2A_Cases_", method, ".png", sep=""))
+  png(file=paste(plot.dir, "2A_Cases_", method, ".png", sep=""))
   print(
     ggplot(d,aes(y=Metric,x=as.factor(Case))) + 
       geom_bar(aes(fill=as.factor(Case)),stat="identity",width=.6) + 
@@ -54,28 +55,31 @@ plot.SC2.amit <- function(method='default'){
       xlab("Case") + ggtitle(paste("2A Cases - Metric =", method)) + coord_flip(ylim=c(0,1))
   )
   dev.off()
-  
+ } 
+
+###Fix bugs in file generation before reintigrating###################################################################
   # For Scoring Design Paper - Supplementary
+  
   # Scoring behavior for different 'mistake scenarios' but with 10 true clusters (instead of
   # 3 as is the case above)
-  d = read.csv(file=paste(tsv_dir, "scoring2A_big_cases_", method, ".tsv", sep=""), sep="\t",header=FALSE)
-  colnames(d) = c("Case","Metric")
+#  d = read.csv(file=paste(tsv_dir, "scoring2A_big_cases_", method, ".tsv", sep=""), sep="\t",header=FALSE)
+ # colnames(d) = c("Case","Metric")
   
-  png(file=paste(plot_dir, "2A_Big_Cases_", method, ".png", sep=""))
-  print(
-    ggplot(d,aes(y=Metric,x=as.factor(Case))) + 
-      geom_bar(aes(fill=as.factor(Case)),stat="identity",width=.6) + 
-      theme(legend.position="none") + ylab("2 Metric") +
-      xlab("Case") + ggtitle(paste("2A Cases with 10 Clusters - Metric =", method)) + coord_flip(ylim=c(0,1))
-  )
-  dev.off()
+#  png(file=paste(plot_dir, "2A_Big_Cases_", method, ".png", sep=""))
+#  print(
+#    ggplot(d,aes(y=Metric,x=as.factor(Case))) + 
+#      geom_bar(aes(fill=as.factor(Case)),stat="identity",width=.6) + 
+#      theme(legend.position="none") + ylab("2 Metric") +
+#      xlab("Case") + ggtitle(paste("2A Cases with 10 Clusters - Metric =", method)) + coord_flip(ylim=c(0,1))
+#  )
+#  dev.off()
   
   # For Scoring Design Paper - Supplementary
   # Scoring behavior when predicted CCM is created by reassigning mutations to another random cluster
   # (with varying probability)
-  d = read.csv(paste(tsv_dir, "scoring2A_random_reassignment_", method, ".tsv", sep=""),sep="\t",header=FALSE)
+if(0 == 1){  d = read.csv(paste(tsv_dir, "scoring2A_random_reassignment_", method, ".tsv", sep=""),sep="\t",header=FALSE)
   colnames(d) = c("Error","Metric")
-  png(file=paste(plot_dir, "2A_random_", method, ".png", sep=""))
+  png(file=paste(plot.dir, "2A_random_", method, ".png", sep=""))
   
   print(
     ggplot(d, aes(x=as.ordered(Error), y=as.numeric(Metric))) + 
@@ -92,7 +96,7 @@ plot.SC2.amit <- function(method='default'){
   d = read.csv(paste(tsv_dir, "scoring2A_closest_reassignment_", method, ".tsv", sep=""),sep="\t",header=FALSE)
   colnames(d) = c("Error","Metric")
   
-  png(file=paste(plot_dir, "2A_closest_", method, ".png", sep=""))
+  png(file=paste(plot.dir, "2A_closest_", method, ".png", sep=""))
   print(
     ggplot(d, aes(x=as.ordered(Error), y=as.numeric(Metric))) + 
       geom_jitter(aes(color=as.ordered(Error)),position = position_jitter(height = 0, width=0.05)) +
@@ -108,7 +112,7 @@ plot.SC2.amit <- function(method='default'){
   d = read.csv(paste(tsv_dir, "scoring2B_beta_", method, ".tsv", sep=""),sep="\t",header=FALSE)
   colnames(d) = c("Error","Metric")
   
-  png(file=paste(plot_dir, "2B_beta_", method, ".png", sep=""))
+  png(file=paste(plot.dir, "2B_beta_", method, ".png", sep=""))
   print(
     ggplot(d, aes(x=as.ordered(Error), y=as.numeric(Metric))) + 
       geom_jitter(aes(color=as.ordered(Error)),position = position_jitter(height = 0, width=0.05)) +
@@ -120,7 +124,7 @@ plot.SC2.amit <- function(method='default'){
 }
 
 
-##### plot.SC2.certainty.scoring #############################################################
+### plot.SC2.certainty.scoring #############################################################
 # For Scoring Design Paper - Supplementary (if at all)
 # TODO: make interactive plots?
 # TODO: combine the plots
