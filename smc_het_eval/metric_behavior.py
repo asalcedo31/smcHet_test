@@ -515,7 +515,7 @@ def scoring3A_weight_behavior(methods=["pseudoV", "pearson", "sym_pseudoV"], ver
     for wght in weight_list:
         norm_wght = wght / float(sum(wght))
         scores = np.sum(norm_wght * res, 1)
-        if set(wght) == {0,weights[-1]} or set(wght) == {weights[-1]}:
+        if set(wght) == {0, weights[-1]} or set(wght) == {weights[-1]}:
             key = '+'.join([methods[i] for i in range(n_method) if wght[i] == weights[-1]])
             wght_res[key] = scores
         else:
