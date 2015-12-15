@@ -205,8 +205,8 @@ def calculate2(pred,truth, full_matrix=True, method='default', pseudo_counts=Non
     '''
     larger_is_worse_methods = ['pseudoV', 'sym_pseudoV'] # methods where a larger score is worse
 
-    pc_pred = add_pseudo_counts(np.copy(pred), num=pseudo_counts) # add pseudo counts to the matrices
-    pc_truth = add_pseudo_counts(np.copy(truth), num=pseudo_counts) # use np.copy so that original values are not altered
+    pc_pred = add_pseudo_counts(pred, num=pseudo_counts) # add pseudo counts to the matrices
+    pc_truth = add_pseudo_counts(truth, num=pseudo_counts) # use np.copy so that original values are not altered
     ncluster = add_pseudo_counts(mb.get_ccm('NCluster', truth), num=pseudo_counts) # predicted CCM when every mutations is in its own cluster
     onecluster = add_pseudo_counts(mb.get_ccm('OneCluster', truth), num=pseudo_counts) # predicted CCM when all mutations are in the same cluster
 
@@ -750,7 +750,9 @@ def parseVCFScoring(data):
 
 def filterFPs(matrix, mask):
     if matrix.shape[0] == matrix.shape[1]:
-        return matrix[mask,:][:,mask]
+        print('Changed filtering 2')
+        nonmask = list(set(range(matrix.shape[0])) - set(mask))
+        return matrix[np.ix_(mask, mask)]
     else:
         return matrix[mask,:]
 
@@ -771,6 +773,10 @@ def add_pseudo_counts(ccm,ad=None,num=None):
         num = np.sqrt(size)
     elif num == 0:
         return ccm, ad
+
+    ccm = np.vstack([ccm, np.zeros([size,num])])
+    ccm = np.column_stack([ccm, np.zeros([size+num,num])])
+    print('Success')
 
     new_ccm = np.identity(size + num)
     new_ccm[:size, :size] = np.copy(ccm)
@@ -868,6 +874,7 @@ def scoreChallenge(challenge,predfiles,truthfiles,vcf):
         if tout[-1] == None or pout[-1] == None:
             return "NA"
     if challengeMapping[challenge]['filter_func']:
+        print('Filtering Challenge %s' % challenge)
         pout = [challengeMapping[challenge]['filter_func'](x,nssms[2]) for x in pout]
     return challengeMapping[challenge]['score_func'](*(pout + tout))
 
