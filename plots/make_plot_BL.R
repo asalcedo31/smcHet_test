@@ -313,7 +313,8 @@ for (method in method.names){
 }
 
 all_metrics_df <- ldply(all_metrics, function(x) as.data.frame(x), .id = 'method')
-
+all_metrics_df$case_num<-as.numeric(as.character(factor(all_metrics_df$Case,labels=c(3,5,1,2,6,4))))
+all_metrics_df<-arrange(all_metrics_df,method,case_num)
 create.scatterplot(
 	formula = Metric ~ case_num,
 	data = all_metrics_df,

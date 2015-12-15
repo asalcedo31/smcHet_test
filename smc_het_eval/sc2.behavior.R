@@ -14,6 +14,8 @@ library(BoutrosLab.plotting.general)
 # Directories for tsv files and plots respectively
 tsv.dir = "scoring_metric_data/text_files/"
 plot.dir = "/u/asalcedo/SMC-HET-Paper1/plots/"
+tsv_dir = tsv.dir
+plot_dir = plot.dir
 # Directory that the script is running in (should be <SMC-Het-Challenge git repo>/smc_het_eval)
 #script.dir <- dirname(sys.frame(1)$ofile)
 #setwd(script.dir)
@@ -62,22 +64,26 @@ plot.SC2.amit <- function(method='default'){
   
   # Scoring behavior for different 'mistake scenarios' but with 10 true clusters (instead of
   # 3 as is the case above)
-#  d = read.csv(file=paste(tsv_dir, "scoring2A_big_cases_", method, ".tsv", sep=""), sep="\t",header=FALSE)
- # colnames(d) = c("Case","Metric")
+if(0==1){
+  method = 'default'
+  print(paste(getwd(),tsv.dir, "scoring2A_big_cases_", method, ".tsv", sep=""))
+  d = read.table(file=paste(tsv.dir, "scoring2A_big_cases_", method, ".tsv", sep=""), sep="\t",header=FALSE)
+  colnames(d) = c("Case","Metric")
   
-#  png(file=paste(plot_dir, "2A_Big_Cases_", method, ".png", sep=""))
-#  print(
-#    ggplot(d,aes(y=Metric,x=as.factor(Case))) + 
-#      geom_bar(aes(fill=as.factor(Case)),stat="identity",width=.6) + 
-#      theme(legend.position="none") + ylab("2 Metric") +
-#      xlab("Case") + ggtitle(paste("2A Cases with 10 Clusters - Metric =", method)) + coord_flip(ylim=c(0,1))
-#  )
-#  dev.off()
-  
+  png(file=paste(plot_dir, "2A_Big_Cases_", method, ".png", sep=""))
+  print(
+    ggplot(d,aes(y=Metric,x=as.factor(Case))) + 
+      geom_bar(aes(fill=as.factor(Case)),stat="identity",width=.6) + 
+      theme(legend.position="none") + ylab("2 Metric") +
+      xlab("Case") + ggtitle(paste("2A Cases with 10 Clusters - Metric =", method)) + coord_flip(ylim=c(0,1))
+  )
+  dev.off()
+}
+
   # For Scoring Design Paper - Supplementary
   # Scoring behavior when predicted CCM is created by reassigning mutations to another random cluster
   # (with varying probability)
-if(0 == 1){  d = read.csv(paste(tsv_dir, "scoring2A_random_reassignment_", method, ".tsv", sep=""),sep="\t",header=FALSE)
+  d = read.csv(paste(tsv_dir, "scoring2A_random_reassignment_", method, ".tsv", sep=""),sep="\t",header=FALSE)
   colnames(d) = c("Error","Metric")
   png(file=paste(plot.dir, "2A_random_", method, ".png", sep=""))
   
@@ -105,7 +111,8 @@ if(0 == 1){  d = read.csv(paste(tsv_dir, "scoring2A_random_reassignment_", metho
       ggtitle(paste("2A Closest Error - Metric =", method))
   )
   dev.off()
-  
+ 
+ if(1 ==0){ 
   # For Scoring Design Paper - Supplementary (maybe)
   # Scoring behavior when predicted CCM is created by adding random zero-mean beta error
   # to the true CCM matrix entries (with different values for the concentration parameter in the beta error) 
@@ -207,7 +214,7 @@ plot.SC2.certainty.scoring <- function(method="pseudoV", display=T){
 # OUPUT:
 #     sp - scatterplot created
 #     scenarios - scenarios tested
-plot.SC2.certainty.scoring.err <- function(std=0.05, method="pseudoV", display=T){
+plot.SC2.certainty.scoring.err <- function(std=0.05, method="pseudoV", display=F){
   if(std == 0){
     return(plot.SC2.certainty.scoring(method=method, display=display))
   } 
@@ -261,6 +268,7 @@ plot.SC2.certainty.scoring.err <- function(std=0.05, method="pseudoV", display=T
     xlimits=xlimits,
     ylimits=ylimits,
     #key = legend
+#  	filename = "Sc2_certainty_scoring.err.tiff"
   )
   if(display){
     print(sp)
@@ -280,7 +288,7 @@ plot.SC2.certainty.scoring.err <- function(std=0.05, method="pseudoV", display=T
 #     err - logical for whether to plot the error or non-err
 # OUPUT:
 #     bp - barplot created
-plot.SC2.certainty.multi <- function(method='sym_pseudoV', display=T, err=T){
+plot.SC2.certainty.multi <- function(method='sym_pseudoV', display=F, err=T){
   if(err){
     # retieve plots
     data <- lapply(std.values, plot.SC2.certainty.scoring.err, method=method, display=F)
@@ -299,32 +307,41 @@ plot.SC2.certainty.multi <- function(method='sym_pseudoV', display=T, err=T){
     print(ylimits)
     
     legend <- legend.grob(
-      list(
-        legend = list(
+      
+        legends = list(
+		legend=list(
           colours = plot.col,
-          title = 'Scenarios',
-          labels = scenarios,
-          size = 3,
-          title.cex=1,
-          label.cex = 1
-          )
-        )
+          title = 'Mistake Scenarios',
+          labels = c('Big Extra', 'Merge Clusters', 'N Clusters', 'One Cluster', 'Small Extra', 'Split Clusters')
+		  )),
+          size = 1,
+          title.cex=0.85,
+          label.cex = 0.8
+     
       )
     
     mp <- create.multiplot(
       plots,
       plot.layout = c(2, ceiling(n.plots/2.0)),
-      filename = paste(plot.dir, 'SC2_', method, '_change_certainty.png'),
-      main = paste('Change in', method, 'Score with Certainty of Clustering with Different Amounts of Error'),
+      filename = paste(plot.dir, 'SC2_', method, '_change_certainty.png',sep=''),
+#      main = paste('Change in', method, 'Score with Certainty of Clustering with Different Amounts of Error'),
       main.cex = 1.6,
-      xaxis.cex=1,
-      yaxis.cex = 1,
+      xaxis.cex = 0.85,
+      yaxis.cex = 0.85,
       xlab.label = 'Certainty',
       ylab.label = 'Score',
       ylimits = c(0,1),
-      print.new.legend=T,
-      retrieve.plot.labels=F,
-      legend = list(right=list(fun=legend))
+      print.new.legend = T,
+      retrieve.plot.labels = F,
+	  xlab.to.xaxis.padding = 0.5,
+	  ylab.padding = 0.7,
+	  left.padding = 1,
+	  xlab.cex = 1.1,
+	  ylab.cex = 1.1,
+      legend = list(inside=list(fun=legend,x= 0.7,y=1)),
+	  width =  5,
+	  height = 6, 
+	  style = 'Nature'
       )
     
     if(display){
