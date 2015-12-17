@@ -447,7 +447,7 @@ main <- function(){
       diff.tot <- rbind(diff.tot, diff)
     }
 
-    colnames(diff.tot) <- method.names
+    colnames(diff.tot) <- c('Original' , 'Original CCM' , 'PseudoV CCM', 'PseudoV', 'Square-root', 'Sym. PseudoV', 'Pearson', 'AUPR', 'MCC', 'PseudoV, MCC, Pearson', 'PseudoV, Pearson, Sym. PseudoV', 'AUPR, Square-root, Sym. PseudoV', 'AUPR, Square-root, Sym. PseudoV, Pearson')
  #   rownames(diff.tot) <- ordering.names
     plot.diff.AS(diff.tot)
 

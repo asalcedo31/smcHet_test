@@ -83,6 +83,7 @@ if(0==1){
   # For Scoring Design Paper - Supplementary
   # Scoring behavior when predicted CCM is created by reassigning mutations to another random cluster
   # (with varying probability)
+ 
   d = read.csv(paste(tsv_dir, "scoring2A_random_reassignment_", method, ".tsv", sep=""),sep="\t",header=FALSE)
   colnames(d) = c("Error","Metric")
   png(file=paste(plot.dir, "2A_random_", method, ".png", sep=""))
@@ -194,6 +195,12 @@ plot.SC2.certainty.scoring <- function(method="pseudoV", display=T){
     xlimits=xlimits,
     ylimits=ylimits,
     #key = legend
+	  text.labels = c(expression(paste(epsilon, "=")),0.00),
+    text.x = c(0.72,0.74),
+    text.y = c(1.18,1.18),
+    add.text = TRUE,
+    text.cex = 0.8,
+
     )
   if(display){
     print(sp)
@@ -235,12 +242,12 @@ plot.SC2.certainty.scoring.err <- function(std=0.05, method="pseudoV", display=F
   ydata <- as.numeric(data.reformat$Score)
   xdata <- as.numeric(data.reformat$Certainty)
   
-  ylimits <- c(0,1)#range(ydata)*c(0.9,1.1)
+  ylimits <- c(-0.5, 1)#range(ydata)*c(0.9,1.1)
   xlimits <- range(xdata)*c(0.9,1.1)
   
   groups <- sort(unique(data.reformat$Scenario))
   plot.col <- default.colours(length(groups))
-  
+  print(str(data.reformat))
   legend = list(
     text = list(
       lab = groups,
@@ -267,8 +274,15 @@ plot.SC2.certainty.scoring.err <- function(std=0.05, method="pseudoV", display=F
     lwd=3,
     xlimits=xlimits,
     ylimits=ylimits,
-    #key = legend
-#  	filename = "Sc2_certainty_scoring.err.tiff"
+    #key = legend,
+	cex=0.75,
+	#text.labels = std,
+	text.labels = c(expression(paste(epsilon, "=")),std),
+	text.x = c(0.72,0.77),
+	text.y = c(1.18,1.18),
+	add.text = TRUE,
+	text.cex = 0.8,
+ # 	filename = "Sc2_certainty_scoring.err.png"
   )
   if(display){
     print(sp)
@@ -296,14 +310,14 @@ plot.SC2.certainty.multi <- function(method='sym_pseudoV', display=F, err=T){
     ymin <- sapply(data, function(x){x$ymin})
     ymin <- min(ymin)
     scenarios <- data[[1]]$scenarios
-    
+    print (method)
     print(scenarios)
     
     # calculate multiplot inputs
     n.plots <- length(plots)
     plot.col <- default.colours(length(scenarios))
     
-    ylimits <- c(0.9*ymin, 1)
+    ylimits <- c(1.1*ymin, 1.28)
     print(ylimits)
     
     legend <- legend.grob(
@@ -323,14 +337,14 @@ plot.SC2.certainty.multi <- function(method='sym_pseudoV', display=F, err=T){
     mp <- create.multiplot(
       plots,
       plot.layout = c(2, ceiling(n.plots/2.0)),
-      filename = paste(plot.dir, 'SC2_', method, '_change_certainty.png',sep=''),
+      filename = paste(plot.dir, 'SC2_', method, '_change_certainty.tiff',sep=''),
 #      main = paste('Change in', method, 'Score with Certainty of Clustering with Different Amounts of Error'),
       main.cex = 1.6,
       xaxis.cex = 0.85,
       yaxis.cex = 0.85,
       xlab.label = 'Certainty',
       ylab.label = 'Score',
-      ylimits = c(0,1),
+      ylimits = ylimits,
       print.new.legend = T,
       retrieve.plot.labels = F,
 	  xlab.to.xaxis.padding = 0.5,
@@ -338,6 +352,8 @@ plot.SC2.certainty.multi <- function(method='sym_pseudoV', display=F, err=T){
 	  left.padding = 1,
 	  xlab.cex = 1.1,
 	  ylab.cex = 1.1,
+	  yaxis.labels = seq(-1.5,1,0.5),
+	  yat = seq(-1.5,1,0.5),
       legend = list(inside=list(fun=legend,x= 0.7,y=1)),
 	  width =  5,
 	  height = 6, 

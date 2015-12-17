@@ -1,5 +1,11 @@
 library(BoutrosLab.plotting.general)
 library(plyr)
+tsv.dir = "scoring_metric_data/text_files/"
+plot.dir = "/u/asalcedo/SMC-HET-Paper1/plots/"
+tsv_dir = tsv.dir
+plot_dir = plot.dir
+
+
 setwd("/u/asalcedo/SMC-HET-Paper1/")
 da = read.csv("plots/scoring1A_behavior.tsv",sep="\t",header=FALSE)
 colnames(da) = c("Real","Pred","Error")
@@ -312,13 +318,19 @@ for (method in method.names){
 	all_metrics[[method]] <- d ;
 }
 
+for (method in method.names){
+   d = read.csv(file=paste(tsv.dir, "scoring2A_big_cases_", method, ".tsv", sep=""), sep="\t",header=FALSE);
+    colnames(d) = c("Case","Metric");
+    all_metrics[[method]] <- d ;
+}
+
 all_metrics_df <- ldply(all_metrics, function(x) as.data.frame(x), .id = 'method')
 all_metrics_df$case_num<-as.numeric(as.character(factor(all_metrics_df$Case,labels=c(3,5,1,2,6,4))))
 all_metrics_df<-arrange(all_metrics_df,method,case_num)
 create.scatterplot(
 	formula = Metric ~ case_num,
 	data = all_metrics_df,
-	filename = "2A_stripplot",
+	filename = "2A_big_cases_stripplot.png",
 	type = c('p','l'),
 	groups = all_metrics_df$method,
 	col = default.colours(8),
@@ -355,7 +367,134 @@ create.scatterplot(
 	width = 3.35,
 	style = 'Nature'
 	)
+#### SC2A Big Cases  #####################################################################
+all_metrics <-list()
+for (method in method.names){
+   d = read.csv(file=paste(tsv.dir, "scoring2A_big_cases_", method, ".tsv", sep=""), sep="\t",header=FALSE);
+    colnames(d) = c("Case","Metric");
+    all_metrics[[method]] <- d ;
+}
 
+all_metrics_df <- ldply(all_metrics, function(x) as.data.frame(x), .id = 'method')
+all_metrics_df$case_num<-as.numeric(as.character(factor(all_metrics_df$Case,labels=c(3,5,1,2,6,4))))
+all_metrics_df<-arrange(all_metrics_df,method,case_num)
+create.scatterplot(
+    formula = Metric ~ case_num,
+    data = all_metrics_df,
+    filename = "2A_big_cases_stripplot",
+    type = c('p','l'),
+    groups = all_metrics_df$method,
+    col = default.colours(8),
+    xaxis.rot = 70,
+    xaxis.lab = c( "N Clusters","One Cluster", "Big Extra","Split Cluster", "Merge Cluster", "Small Extra"),
+    xat = seq(1,6),
+    ylim = c(0,1.4),
+    yaxis.cex = 0.6,
+    xaxis.cex = 0.7,
+    xlab.label = c(),
+    ylab.label = 'Score',
+    ylab.cex = 0.75,
+    key = list (
+        points = list(
+            pch = 19,
+            col = default.colours(8),
+            cex = 0.3
+       ),
+        text = list(
+            lab = c("Average of MCC, Pearsion, PseudoV","Square-root","PseudoV","Symmetric PseudoV", "Spearman", "Pearson", "AUPR","MCC"),
+            cex = 0.6,
+            col = 'black',
+            padding.text =  -0.2
+            ),
+    x = 0,
+    y = 1,
+    padding.text = 0.5
+),
+    left.padding = 0.1,
+    ylab.padding = 0.1,
+    bottom.padding = 0.22,
+    cex = 0.2,
+    height = 4.6,
+    width = 3.35,
+    style = 'Nature'
+    )
+
+####SC2A Random reassignment ######################################################################
+method.names <- c("default",
+                  "sqrt",
+                  "pseudoV",
+                  "sym_pseudoV",
+                  "spearman",
+                  "pearson",
+                  "aupr",
+                  "mcc")
+
+plot.random.reassignment <- function (method){
+	d = read.csv(paste(tsv.dir, "scoring2A_random_reassignment_", method, ".tsv", sep=""),sep="\t",header=FALSE);
+	colnames(d) = c("Error","Metric");
+	d$Error<-as.ordered(d$Error);
+	median.values <- unlist(daply(d, .(Error), summarise, median(Metric)));
+	stripplot<-create.stripplot(
+		Metric ~ Error,
+		data = d,
+#		filename = "2A_random_reassignment_BL",
+		add.median = TRUE,
+		median.values = median.values,
+		cex = 0.25,
+		colour.alpha = 0.75,
+		jitter.data = TRUE,
+		jitter.factor = 0.1,
+		style = 'Nature'
+		)
+	return(stripplot)
+	}
+	
+method.plots<-list()
+	for (method in method.names){
+		method.plots[[method]] <- plot.random.reassignment(method)
+	}
+
+create.multiplot(
+	plot.objects = method.plots,
+	filename = "2A_random_reassignment_multiplot.png",
+	plot.layout = c(2,4),
+	yaxis.cex = 0.5,
+	xaxis.cex = 0.5,
+	style = 'Nature'
+	)
+all_metrics<-list()
+
+for (method in method.names){
+	d = read.csv(paste(tsv.dir, "scoring2A_random_reassignment_", method, ".tsv", sep=""),sep="\t",header=FALSE);
+	colnames(d) = c("Error","Metric");
+	d$Error<-as.ordered(d$Error);
+	all_metrics[[method]] <- d
+	}
+all_metrics_df <- ldply(all_metrics, function(x) as.data.frame(x), .id = 'method')
+median.values <- unlist(daply(all_metrics_df, .(Error,method), summarise, median(Metric)));
+create.stripplot(
+	formula = Metric ~ Error,
+	data = all_metrics_df,
+	groups =  method,
+	filename = "2A_random_test.png",
+	col = default.colours(8),
+	cex = 0.5,
+	colour.alpha = 0,.75,
+	jitter.data = TRUE,
+	
+	
+	)
+
+all_metrics_error <- ddply (all_metrics_df, .(Error, method),summarise, mean=mean(Metric), upper= range(Metric)[2], lower = range(Metric)[1])
+create.scatterplot (
+	formula = mean ~ Error,
+	data = all_metrics_error,
+	group = method,
+	col = default.colours(8),
+	y.errror.up = all_metrics_error$upper,
+	y.error.down = all_metrics_error$lower,
+	filename = "2A_random_test_sp.png"
+	)
 
 #### SC3 Scoring barplots multiplot################################################################
 
@@ -468,17 +607,17 @@ plot.diff.AS <- function(diff.tot){
           #      main = "Difference Between Metric Rankings and Desired Rankings",
            #      main.cex = 1.5,
 		   		 xlab.label = c(),
-                 xaxis.rot = 75,
+                 xaxis.rot = 70,
                  xaxis.cex = 0.79,
                  yaxis.cex = 0.7,
-                 xlab.cex = 0.5,
+                 xlab.cex = 04,
                  ylab.label = "1 -Spearman",
 				 right.padding = 0,
 				 left.padding = 0,
 				 ylab.axis.padding = 0.3,
                  ylab.cex = 1,
 				 width = 3.1,
-				 height = 7,
+				 height = 6,
                  col = diff.colours,
 #				 xaxis.lab = rev(plot.labels),
                  sample.order = "increasing",

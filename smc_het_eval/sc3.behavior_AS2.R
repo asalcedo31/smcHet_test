@@ -110,13 +110,13 @@ plot.SC3.amit <- function(){
 plot.SC3.all <- function(method="pseudoV", ordering="Copeland", display=F, colour, title= NULL){
   # All Cases SC3
   case.colours<-colorRampPalette(c('white',colour))(nrow(df.case.groups))
-rank <- read.csv(file=paste(tsv_dir, "aggregate_scenario_rankings.csv", sep=""), sep=",", header=TRUE)
+rank <- read.csv(file=paste( "scoring_metric_data/text_files/aggregate_scenario_rankings.csv", sep=""), sep=",", header=TRUE)
   d = read.csv(file=paste(tsv_dir, "scoring3A_all_cases_", method, "_nc_more_pc_full.tsv", sep=""), sep="\t",header=FALSE)
   colnames(d) = c("Case","Metric")
   d <- merge(rank, d, by="Case")
   d <- merge(df.case.groups, d, by="Case")
   d <- d[order(d[,ordering]),] # order the columns based on the given value
-  
+  print(tsv_dir)
   d$Case <- factor(d$Case, levels=unique(as.character(d$Case))) # change the case column to be factors
   if(method.is.good.greater[method][[1]]){ # flip data so that bigger is always worse
     upper <- ceiling(max(d$Metric))
