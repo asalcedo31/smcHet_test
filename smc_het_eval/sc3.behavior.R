@@ -20,8 +20,7 @@ method.names <- list("orig", "orig_nc", "pseudoV", "pseudoV_nc",
                   c('aupr_nc', 'sqrt_nc', 'sym_pseudoV_nc', 'pearson_nc'))
 
 ordering.names <- c("Copeland", "Paul", "Nathan", "Dave", "Adriana", "Peter", "Quaid")
-method.is.good.greater <- list("orig"=T, "orig_nc"=T, "pseudoV"=T, "pseudoV_nc"=F, "simpleKL_nc"=F, 
-                               "sqrt"=T, "sym_pseudoV"=T, "pearson"=T, "aupr"=T, "mcc"=T)
+
 case.groups <- list("NCluster"=c("NClusterOneLineage", "NClusterTwoLineages", "NClusterCorrectLineage"),
                     "OneCluster"=c("OneCluster"),
                     "Phelogeny"=c("ParentIsNieceWithChildren", "ParentIsSiblingWithChildren", "ParentIsCousin", 
@@ -46,7 +45,10 @@ for(group.name in names(case.groups)){
 case.colours<-colorRampPalette(brewer.pal(nrow(df.case.groups),"Blues"))(nrow(df.case.groups))
 rank <- read.csv(file=paste(tsv_dir, "aggregate_scenario_rankings.csv", sep=""), sep=",", header=TRUE)
 ##### plot.SC3.amit ############################################################
+# FOR PAPER: DO NOT INCLUDE
+#
 # SC 3 plots that are modelled after Amit's plots for SC 2
+
 plot.SC3.amit <- function(){
   d = read.csv(file=paste(tsv_dir, "scoring3A_split_cases.tsv", sep=""), sep="\t",header=FALSE)
   colnames(d) = c("Case","Metric")
@@ -199,6 +201,8 @@ cross.validate <- function(n.folds = 5, seed=NA, inc.all=T, inc.stats=T, func=or
 }
 
 ##### plot.SC3.all #############################################################
+# FOR PAPER: MAIN TEXT
+#
 # TODO: make interactive plots?
 # TODO: combine the plots
 # Create a plot with the scoring metrics for all the cases for Sub Challenge 3 
@@ -238,11 +242,7 @@ rank <- read.csv(file=paste( "scoring_metric_data/text_files/aggregate_scenario_
   d <- d[order(d[,ordering]),] # order the columns based on the given value
   print(tsv_dir)
   d$Case <- factor(d$Case, levels=unique(as.character(d$Case))) # change the case column to be factors
-  if(method.is.good.greater[method][[1]]){ # flip data so that bigger is always worse
-    print("flipped")
-	upper <- ceiling(max(d$Metric))
-    d$Metric <- upper - d$Metric
-  }
+  d$Metric <- 1 - d$Metric
   
   # data for barplot
   xdata <- d$Metric
@@ -313,6 +313,8 @@ get.scoring.data <- function(method="sym_pseudoV_nc", ordering="Copeland", displ
 }
 
 #### plot.multi.SC3 ####################################################
+# FOR PAPER: MAIN TEXT
+#
 # TODO: add labels to graphs
 # Plot multiple metric ranking plots on the same figure to compare them
 plot.multi.SC3 <- function(){
@@ -398,8 +400,6 @@ ordering.diff <- function(method="sym_pseudoV", ordering="Copeland", penalty="sp
 #             and the desired ordering summed over all cases and then square rooted
 #           spearman - spearman rank correlation between the scoring metric ordering 
 #             and the desired ordering
-#     is.good.greater - logical denoting if the given metric gives good submissions 
-#         larger scores (TRUE) or bad submissions larger scores (FALSE) 
 #     scenarios.i - indices of the mistake scenarios to be included in the ranking. 
 #         Indices should all be betwee 1 and 27
 ordering.diff.weights <- function(method=c("pseudoV_nc", "pearson_nc", "sym_pseudoV_nc"), ordering="Copeland", penalty="spearman", scenarios.i=1:27){
@@ -462,6 +462,8 @@ main <- function(){
 }
 
 #### plot.diff #################################################################################
+# FOR PAPER: MAIN TEXT
+#
 # Plot the differences between the metric rankings and the desired rankings
 #
 # INPUT:
@@ -534,6 +536,8 @@ plot.diff <- function(diff.tot, penalty='spearman'){
 }
 
 #### plot.diff.pc #################################################################################
+# FOR PAPER: SUPPLEMENTARY
+#
 # Plot the differences between the metric rankings and the desired rankings for different pseudo count levels
 #
 # INPUT:
@@ -620,6 +624,8 @@ plot.diff.pc <- function(methods=method.names, ordering="Copeland", penalty="spe
 }
 
 #### plot.diff.input #################################################################################
+# FOR PAPER: SUPPLEMENTARY
+#
 # Plot the differences between the metric rankings and the desired rankings for the mistake scenarios 
 # comparing the metrics using different input matrices to calculate the metric scores
 #
@@ -715,6 +721,8 @@ plot.diff.input <- function(methods=method.names, ordering="Copeland", penalty="
 
 
 #### plot.diff.weights #################################################################################
+# FOR PAPER: SUPPLEMENTARY
+#
 # Plot the differences between the metric rankings and the desired rankings for
 # a weighted average between 3 different metrics, using varying weights for each metric
 #
