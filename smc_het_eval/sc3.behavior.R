@@ -43,7 +43,8 @@ for(group.name in names(case.groups)){
   df.case.groups[i:(i+length(group)-1), "Case"] <- group
   i <- i + length(group)
 }
-
+case.colours<-colorRampPalette(brewer.pal(nrow(df.case.groups),"Blues"))(nrow(df.case.groups))
+rank <- read.csv(file=paste(tsv_dir, "aggregate_scenario_rankings.csv", sep=""), sep=",", header=TRUE)
 ##### plot.SC3.amit ############################################################
 # SC 3 plots that are modelled after Amit's plots for SC 2
 plot.SC3.amit <- function(){
@@ -226,16 +227,16 @@ cross.validate <- function(n.folds = 5, seed=NA, inc.all=T, inc.stats=T, func=or
 #         Indices should all be betwee 1 and 27
 # OUPUT:
 #     bp - barplot created
-plot.SC3.all <- function(method="pseudoV", ordering="Copeland", display=T, pc='more', m_size='full', scenarios.i=1:27){
+plot.SC3.all <- function(method="pseudoV", ordering="Copeland", display=F, colour, title= NULL){
   # All Cases SC3
-  
-  rank <- get.ranking(scenarios.i = scenarios.i, aggr.meth = ordering)
-  d <- get.scoring.data(method=method, pc=pc, m_size=m_size)
-  
+  case.colours<-colorRampPalette(c('white',colour))(nrow(df.case.groups))
+rank <- read.csv(file=paste( "scoring_metric_data/text_files/aggregate_scenario_rankings.csv", sep=""), sep=",", header=TRUE)
+  d = read.csv(file=paste(tsv_dir, "scoring3A_all_cases_", method, "_nc_more_pc_full.tsv", sep=""), sep="\t",header=FALSE)
+  colnames(d) = c("Case","Metric")
   d <- merge(rank, d, by="Case")
   d <- merge(df.case.groups, d, by="Case")
   d <- d[order(d[,ordering]),] # order the columns based on the given value
-  
+  print(tsv_dir)
   d$Case <- factor(d$Case, levels=unique(as.character(d$Case))) # change the case column to be factors
   if(method.is.good.greater[method][[1]]){ # flip data so that bigger is always worse
     upper <- ceiling(max(d$Metric))
@@ -250,23 +251,21 @@ plot.SC3.all <- function(method="pseudoV", ordering="Copeland", display=T, pc='m
   xlims <- c(0.9*min(xdata), 1.1*max(xdata))
   
   bp <- create.barplot(
-    ydata ~ xdata,
+    xdata ~ ydata,
     d,
-    main=paste(method,"Score for Different Clustering Mistakes"),
+    main= title,
     main.cex=1.5,
     col=case.colours,
     yaxis.rot=30,
     yaxis.cex=0.8,
-    xlab.label="Metric Score",
+    xlab.label="Clustering Case/Mistake",
     xlab.cex=1,
-    ylab.label="Clustering Case/Mistake",
+    ylab.label="Metric Scores",
     ylab.cex=1,
-    xlimits=xlims,
-    plot.horizontal=T,
-    legend = list(
-      inside = case.legend
-      )
-  )
+  	xaxis.lab = NULL,
+	style='Nature'
+	)
+  
   if(display){
     print(bp)
   }
