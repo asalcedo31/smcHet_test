@@ -20,8 +20,8 @@ method.names <- list("orig", "orig_nc", "pseudoV", "pseudoV_nc",
                   c('aupr_nc', 'sqrt_nc', 'sym_pseudoV_nc', 'pearson_nc'))
 
 ordering.names <- c("Copeland", "Paul", "Nathan", "Dave", "Adriana", "Peter", "Quaid")
-method.is.good.greater <- list("orig"=T, "orig_nc"=T, "pseudoV"=F, "pseudoV_nc"=F, "simpleKL_nc"=F, 
-                               "sqrt_nc"=T, "sym_pseudoV_nc"=F, "pearson_nc"=T, "aupr_nc"=T, "mcc_nc"=T)
+method.is.good.greater <- list("orig"=T, "orig_nc"=T, "pseudoV"=T, "pseudoV_nc"=F, "simpleKL_nc"=F, 
+                               "sqrt"=T, "sym_pseudoV"=T, "pearson"=T, "aupr"=T, "mcc"=T)
 case.groups <- list("NCluster"=c("NClusterOneLineage", "NClusterTwoLineages", "NClusterCorrectLineage"),
                     "OneCluster"=c("OneCluster"),
                     "Phelogeny"=c("ParentIsNieceWithChildren", "ParentIsSiblingWithChildren", "ParentIsCousin", 
@@ -239,7 +239,8 @@ rank <- read.csv(file=paste( "scoring_metric_data/text_files/aggregate_scenario_
   print(tsv_dir)
   d$Case <- factor(d$Case, levels=unique(as.character(d$Case))) # change the case column to be factors
   if(method.is.good.greater[method][[1]]){ # flip data so that bigger is always worse
-    upper <- ceiling(max(d$Metric))
+    print("flipped")
+	upper <- ceiling(max(d$Metric))
     d$Metric <- upper - d$Metric
   }
   

@@ -504,7 +504,7 @@ create.scatterplot (
 	ylab.cex = 0.95,
 	points.col = rep(default.colours(8),7),
 	filename = "2A_random_test_sp.png",
-	ylimits = c(-0.1,1.39),
+	ylimits = c(-0.9,1.49),
 	key = list (
 		points = list(
 			pch = 19,
@@ -514,12 +514,12 @@ create.scatterplot (
 			),
 		text = list(
             lab = c("Average of MCC, Pearson, PseudoV","Square-root","PseudoV","Symmetric PseudoV", "Spearman", "Pearson", "AUPR","MCC"),
-            cex = 0.85,
+            cex = 0.75,
             col = 'black'
             ),
 			x = 0.01,
 			y = 1,
-			padding.text =0.5
+			padding.text =0.4
 			),
 
 	style = 'Nature'
@@ -591,7 +591,7 @@ create.multiplot(
   height = 6.4,
   ylab.padding = 1,
   print.new.legend = TRUE,
-  filename ="SC3_barplot_multiplot_titles",
+  filename ="SC3_barplot_multiplot_titles_test",
   style ='Nature'
   )
 
