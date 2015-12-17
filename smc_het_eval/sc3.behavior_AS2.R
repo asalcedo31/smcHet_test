@@ -118,10 +118,7 @@ rank <- read.csv(file=paste( "scoring_metric_data/text_files/aggregate_scenario_
   d <- d[order(d[,ordering]),] # order the columns based on the given value
   print(tsv_dir)
   d$Case <- factor(d$Case, levels=unique(as.character(d$Case))) # change the case column to be factors
-  if(method.is.good.greater[method][[1]]){ # flip data so that bigger is always worse
-    upper <- ceiling(max(d$Metric))
-    d$Metric <- upper - d$Metric
-  }
+  d$Metric <- 1 - d$Metric
   
   # data for barplot
   xdata <- d$Metric
@@ -140,7 +137,7 @@ rank <- read.csv(file=paste( "scoring_metric_data/text_files/aggregate_scenario_
     yaxis.cex=0.8,
     xlab.label="Clustering Case/Mistake",
     xlab.cex=1,
-    ylab.label="Metric Scores",
+    ylab.label="Penalty",
     ylab.cex=1,
   	xaxis.lab = NULL,
 	style='Nature'
