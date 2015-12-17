@@ -486,14 +486,43 @@ create.stripplot(
 	)
 
 all_metrics_error <- ddply (all_metrics_df, .(Error, method),summarise, mean=mean(Metric), upper= range(Metric)[2], lower = range(Metric)[1])
+median_df<-ddply(all_metrics_df, .(Error,method), summarise, median =median(Metric))
 create.scatterplot (
-	formula = mean ~ Error,
-	data = all_metrics_error,
+	formula = Metric ~ Error,
+	data = all_metrics_df,
 	group = method,
 	col = default.colours(8),
-	y.errror.up = all_metrics_error$upper,
-	y.error.down = all_metrics_error$lower,
-	filename = "2A_random_test_sp.png"
+	add.points = TRUE,
+	points.pch = 4,
+	alpha = 0.15,
+	points.x = median_df$Error,
+	points.y = median_df$median,
+	points.cex = 1.4,
+	yaxis.cex = 0.8,
+	xaxis.cex = 0.8,
+	xlab.cex = 0.95,
+	ylab.cex = 0.95,
+	points.col = rep(default.colours(8),7),
+	filename = "2A_random_test_sp.png",
+	ylimits = c(-0.1,1.39),
+	key = list (
+		points = list(
+			pch = 19,
+			col = default.colours (8),
+			cex = 0.8,
+			alpha = 0.5
+			),
+		text = list(
+            lab = c("Average of MCC, Pearson, PseudoV","Square-root","PseudoV","Symmetric PseudoV", "Spearman", "Pearson", "AUPR","MCC"),
+            cex = 0.85,
+            col = 'black'
+            ),
+			x = 0.01,
+			y = 1,
+			padding.text =0.5
+			),
+
+	style = 'Nature'
 	)
 
 #### SC3 Scoring barplots multiplot################################################################
