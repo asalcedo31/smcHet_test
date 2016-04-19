@@ -26,14 +26,11 @@
 ### PREAMBLE #######################################################################################
 # Setting the Environment
 
-library(getopt);
-library(VariantAnnotation);
 
-spec = matrix(c(
-  'vcf', 'v', 1, "character"
-  ), byrow=TRUE, ncol=4);
-opt = getopt(spec);
-vcf_file <- opt$vcf;
+library(VariantAnnotation);
+commandArgs = TRUE;
+args <- commandArgs(trailingOnly=TRUE);
+vcf_file <-args[1]
 vcf<-readVcf(vcf_file,"hg19");
 
 num_ssm <- as.numeric(summary(vcf)[1])
