@@ -59,10 +59,10 @@ sc3B <- t(apply(sc3A, 1, function(x) assign_ancestry(x)));
 
 
 
-write.table(sc2A, "sc2A.txt", row.names=FALSE, col.names=FALSE, quote=FALSE, sep='');
-write.table(sc2B, "sc2B.txt", row.names=FALSE, col.names=FALSE, quote=FALSE, sep='');
-write.table(sc3A, "sc3A.txt", row.names=FALSE, col.names=FALSE, quote=FALSE);
-write.table(sc3B, "sc3B.txt", row.names=FALSE, col.names=FALSE, quote=FALSE, sep='');
+write.table(sc2A, "sc2A.txt", row.names=FALSE, col.names=FALSE, quote=FALSE, sep='\t');
+write.table(sc2B, "sc2B.txt", row.names=FALSE, col.names=FALSE, quote=FALSE, sep='\t');
+write.table(sc3A, "sc3A.txt", row.names=FALSE, col.names=FALSE, quote=FALSE, sep='\t');
+write.table(sc3B, "sc3B.txt", row.names=FALSE, col.names=FALSE, quote=FALSE, sep='\t');
 
 
 
