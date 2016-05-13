@@ -39,7 +39,7 @@ num_ssm <- as.numeric(summary(vcf)[1])
 sc1B <- 1;
 
 #SC 1C
-sc1C <-num_ssm;
+sc1C <-data.frame(c(1,num_ssm,1));
 
 #SC 2A
 
@@ -48,14 +48,14 @@ sc2B <- matrix(ncol = num_ssm, nrow = num_ssm, rep(1,num_ssm^2));
 
 #SC 3A
 
-sc3A <- data.frame(c(1,0));
+sc3A <- data.frame(matrix(c(1,0),ncol=2));
 sc3B <-  matrix(ncol = num_ssm, nrow = num_ssm, rep(0,num_ssm^2));
 
 write.table(sc1B, "sc1B.txt", row.names=FALSE, col.names=FALSE, quote=FALSE);
-write.table(sc1C, "sc1C.txt", row.names=FALSE, col.names=FALSE, quote=FALSE);
+write.table(sc1C, "sc1C.txt", row.names=FALSE, col.names=FALSE, quote=FALSE,sep='\t');
 write.table(sc2A, "sc2A.txt", row.names=FALSE, col.names=FALSE, quote=FALSE, sep='\t');
 write.table(sc2B, "sc2B.txt", row.names=FALSE, col.names=FALSE, quote=FALSE, sep='\t');
-write.table(sc3A, "sc3A.txt", row.names=FALSE, col.names=FALSE, quote=FALSE, sep = '\t');
+write.table(sc3A, "sc3A.txt", row.names=FALSE, col.names=FALSE, quote=FALSE, sep='\t');
 write.table(sc3B, "sc3B.txt", row.names=FALSE, col.names=FALSE, quote=FALSE, sep='\t');
 
 

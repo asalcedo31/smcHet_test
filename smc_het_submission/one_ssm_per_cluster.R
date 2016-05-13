@@ -27,7 +27,7 @@
 # Setting the Environment
 
 
-
+library(getopt);
 library(VariantAnnotation);
 commandArgs = TRUE;
 args <- commandArgs(trailingOnly=TRUE);
@@ -40,13 +40,15 @@ num_ssm <- as.numeric(summary(vcf)[1])
 
 sc2A <- data.frame(ssms=seq_len(num_ssm));
 sc2B <- matrix(ncol = num_ssm, nrow = num_ssm, rep(0,num_ssm^2));
-
+for (i in c(1:num_ssm)){
+	sc2B[i,i] <- 1
+	}
 
 #SC3
 
 FA <- unlist(geno(vcf)$FA[(num_ssm+1):(2*num_ssm)]);
 FA_ranks <- rank(FA, ties.method="random");
-FA_ranks_rev <- 1230-FA_ranks
+FA_ranks_rev <- length(FA_ranks)-FA_ranks
 sc3A <- data.frame(ssms=seq_len(num_ssm), ancestor=(FA_ranks_rev))
 
 assign_ancestry <- function(x){
@@ -61,7 +63,7 @@ sc3B <- t(apply(sc3A, 1, function(x) assign_ancestry(x)));
 
 write.table(sc2A, "sc2A.txt", row.names=FALSE, col.names=FALSE, quote=FALSE, sep='\t');
 write.table(sc2B, "sc2B.txt", row.names=FALSE, col.names=FALSE, quote=FALSE, sep='\t');
-write.table(sc3A, "sc3A.txt", row.names=FALSE, col.names=FALSE, quote=FALSE, sep='\t');
+write.table(sc3A, "sc3A.txt", row.names=FALSE, col.names=FALSE, quote=FALSE, sep ='\t');
 write.table(sc3B, "sc3B.txt", row.names=FALSE, col.names=FALSE, quote=FALSE, sep='\t');
 
 
