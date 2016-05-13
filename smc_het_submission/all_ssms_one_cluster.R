@@ -39,7 +39,7 @@ num_ssm <- as.numeric(summary(vcf)[1])
 sc1B <- 1;
 
 #SC 1C
-sc1C <-data.frame(c(1,num_ssm,1));
+sc1C <-data.frame(matrix(c(1,num_ssm,1),ncol=3));
 
 #SC 2A
 
